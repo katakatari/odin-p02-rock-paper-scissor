@@ -1,1 +1,1 @@
-# odin-p02-rock-paper-scissor
+# Rock Paper Scissor Game!
