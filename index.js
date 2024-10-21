@@ -7,118 +7,164 @@ console.log("Script running...")
  * - Paper > Rock
  * 
  * PSEUDOCODE
- * - Create a function to get the random value to differentiate between 3 choices
- * - Store the value into variable ```const choice```
- * - Get the user input
- * - Keep track of the user score in a variable ```let playerscore = 0; let computerscore = 0;```
- * - Create a function to play a single round, the function will compare user's choice with the computer's choice
- *  - if user choose rock and computer choose scissor, display a message that the user is winning
- *  - if user choose scissor and computer choose paper, display a message that the user is winning
- *  - if user choose paper and computer choose rock, display a message that the user is winning
- *  - if user's choice and computer's choice are the same display a message that the result is a tie or draw
+ * - When the page load display play Play game Button
+ * - When play game button is clicked display the total round and current round
+ * - Display Rock, Paper and Scissor for player to choose
+ * - Display current score
+ * - When player pick their choice, show computer's choice
+ * - Compare both choice and show the result according to the rules
+ * - Show the result and update the score
+ * - Repeat until the total round is reached
+ * - Compare the player's and computer's score
+ * - The one with the highest score is the winner
+ * - If the score is the same the game ended with a draw
+ * - Display the result
+ * - Display reset button
+ * - Reset the game when the reset button is pressed
 */
 
 // A function to get random number between 1 - 3 that will determine the computer choice
 const getComputerChoice = () => Math.floor(Math.random() * 3) + 1;
 
 // A function to get input from player
-const getPlayerChoice = () => prompt("Type 'Rock', 'Paper' or 'Scissor' to play:");
+const playerlabel = document.querySelector("#player .label");
+const playerChoice = document.querySelector("#player .choice");
+const playerRoundResult = document.querySelector("#player .round-result");
+const playerScore = document.querySelector("#player .score");
+
+const computerlabel = document.querySelector("#computer .label");
+const computerChoice = document.querySelector("#computer .choice");
+const computerRoundResult = document.querySelector("#computer .round-result");
+const computerScore = document.querySelector("#computer .score");
+
+const startGame = document.querySelector("#start-game")
+
+const choices = document.querySelector(".choices");
+
+const showRounds = document.querySelector(".rounds");
+
+const winner = document.querySelector("#winner");
+
+const updateScore = (player, computer) => {
+  playerScore.textContent = `Score: ${player}`;
+  computerScore.textContent = `Score: ${computer}`;
+}
+
+const updateRoundResult = (player, computer) => {
+  playerRoundResult.textContent = player;
+  computerRoundResult.textContent = computer;
+}
+
+const rps = ["rock", "paper", "scissor"];
+
+const rock = document.createElement("button");
+rock.textContent = "Rock";
+rock.id = "rock";
+
+const paper = document.createElement("button");
+paper.textContent = "Paper";
+paper.id = "paper";
+
+const scissor = document.createElement("button");
+scissor.textContent = "Scissor";
+scissor.id = "scissor";
+
+// Scores for both player and computer
+const score = {
+  player: 0,
+  computer: 0
+};
+
+const round = {
+  total: 5,
+  current: 1
+}
+
+const canPlay = () => round.current < round.total ? true : false
 
 // A function to start the game
 const playGame = () => {
-  // total round the game will run
-  const totalRound = 5;
+  showRounds.textContent = `Round: ${round.current} of ${round.total}`
 
-  // Scores for both player and computer
-  let playerScore = 0;
-  let computerScore = 0;
+  choices.appendChild(rock);
+  choices.appendChild(paper);
+  choices.appendChild(scissor);
 
-  // A function that will run every round
-  // compare the player and computer choice
-  // and return the result
-  const playRound = (player = "", computer = 0) => {
-    // check the type of player input
-    // if it's string convert it to lowercase
-    player = typeof player === "string" && player.toLowerCase();
-    
+  computerlabel.textContent = "Computer";
+  playerlabel.textContent = "Player";
+
+  rock.addEventListener("click", (e) => playRound(e.target.id));
+  paper.addEventListener("click", (e) => playRound(e.target.id));
+  scissor.addEventListener("click", (e) => playRound(e.target.id));
+
+  updateScore(score.player, score.computer);
+}
+
+// A function that will run every round
+// compare the player and computer choice
+// and return the result
+const playRound = (player = "") => {
+  if (canPlay()) {
     // convert number into rock, paper or scissor before comparing it with the player input
+    let computer = getComputerChoice()
     computer = computer === 1 ? "rock" : computer === 2 ? "paper" : "scissor";
 
-    console.log(`Player choose: ${player} | Computer choose: ${computer}`);
+    playerChoice.textContent = player;
+    computerChoice.textContent = computer;
 
-    if (!player) {
-      console.log("You didn't write any input, so the computer win this round");
-      return "computer"
-    } else {
-      if (player === "rock") {
-        if (computer === "paper") {
-          console.log("Rock loses to Paper, Computer win this round!")
-          return "computer";
-        } else if (computer === "scissor") {
-          console.log("Rock beats Scissor, You win this round!");
-          return "player";
-        } else {
-          console.log(`Both choose Rock. The result is a draw!`);
-          return "draw";
-        }
-      } else if (player === "paper") {
-        if (computer === "scissor") {
-          console.log("Paper loses to Scissor, Computer win this round!");
-          return "computer";
-        } else if (computer === "rock") {
-          console.log("Paper beats Rock, You win this round!");
-          return "player";
-        } else {
-          console.log(`Both choose Paper. The result is a draw!`);
-          return "draw";
-        }
-      } else if (player === "scissor") {
-        if (computer === "rock") {
-          console.log("Scissor loses to Rock, Computer win this round!");
-          return "computer";
-        } else if (computer === "paper") {
-          console.log("Scissor beats Paper, You win this round!");
-          return "player";
-        } else {
-          console.log(`Both choose Scissor. The result is a draw!`);
-          return "draw";
-        }
+    if (player === "rock") {
+      if (computer === "paper") {
+        score.computer++
+        updateScore(score.player, score.computer);
+        updateRoundResult('Lose', 'Win')
+      } else if (computer === "scissor") {
+        score.player++
+        updateScore(score.player, score.computer);
+        updateRoundResult('Win', 'Lose');
       } else {
-        console.log("You wrote something that isn't 'rock', 'paper' or 'scissor'");
-        return "draw";
+        updateRoundResult('Draw', 'Draw');
       }
     }
-  }
-
-  console.log("Game Start!");
-  console.log(`Player Score: ${playerScore} | Computer Score: ${computerScore}`);
-
-  // loop n number of round
-  for (let i = 1; i <= totalRound; i++) {
-    console.log(`Round: ${i}`)
-
-    // run the playRound function and get both player and computer choice
-    const result = playRound(getPlayerChoice(), getComputerChoice());
-
-    if (result === "player") {
-      playerScore++;
-      console.log(`Player Score: ${playerScore} | Computer Score: ${computerScore}`);
-    } else if (result === "computer") {
-      computerScore++;
-      console.log(`Player Score: ${playerScore} | Computer Score: ${computerScore}`);
-    } else {
-      console.log(`Player Score: ${playerScore} | Computer Score: ${computerScore}`);
+    if (player === "paper") {
+      if (computer === "scissor") {
+        score.computer++
+        updateScore(score.player, score.computer);
+        updateRoundResult('Lose', 'Win')
+      } else if (computer === "rock") {
+        score.player++
+        updateScore(score.player, score.computer);
+        updateRoundResult('Win', 'Lose');
+      } else {
+        updateRoundResult('Draw', 'Draw');
+      }
     }
-  }
+    if (player === "scissor") {
+      if (computer === "rock") {
+        score.computer++
+        updateScore(score.player, score.computer);
+        updateRoundResult('Lose', 'Win')
+      } else if (computer === "paper") {
+        score.player++
+        updateScore(score.player, score.computer);
+        updateRoundResult('Win', 'Lose');
+      } else {
+        updateRoundResult('Draw', 'Draw');
+      }
+    }
 
-  console.log("Game Over!")
+    round.current++;
+    showRounds.textContent = `Round: ${round.current} of ${round.total}`
 
-  // display an alert to show the winner
-  if (playerScore > computerScore) {
-    alert(`Congratulations, You win this game!\n\nThe final score is:\nPlayer score: ${playerScore}\nComputer score: ${computerScore}`)
-  } else {
-    alert(`Computer win this game!\n\nThe final score is:\nPlayer score: ${playerScore}\nComputer score: ${computerScore}`)
+    !canPlay() && showWinner();
   }
 }
 
-playGame();
+const showWinner = () => {
+  if (score.player > score.computer) {
+    winner.textContent = `Congratulations, You win this game!\n\nFinal score:\nPlayer: ${score.player}  | Computer: ${score.computer}`
+  } else {
+    winner.textContent = `Computer won this game!\n\nFinal score:\nPlayer : ${score.player} | Computer: ${score.computer}`
+  }
+}
+
+startGame.addEventListener("click", playGame)
